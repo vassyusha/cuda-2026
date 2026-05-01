@@ -59,7 +59,7 @@ std::vector<float> GeluCUDA(const std::vector<float>& input) {
         cudaMemcpyAsync(output.data() + offset, d_output + offset,
                         size * sizeof(float),
                         cudaMemcpyDeviceToHost, streams[i]);  
-    } I
+    }
 
     cudaDeviceSynchronize();
 
