@@ -1,4 +1,0 @@
-/home/crazyproger/sandbox/cuda-2026/3823B1FI3/5_block_gemm_omp/votincev_dmitri/block_gemm_omp.cpp:1:10: fatal error: naive_gemm_omp.h: No such file or directory
-    1 | #include "naive_gemm_omp.h"
-      |          ^~~~~~~~~~~~~~~~~~
-compilation terminated.
