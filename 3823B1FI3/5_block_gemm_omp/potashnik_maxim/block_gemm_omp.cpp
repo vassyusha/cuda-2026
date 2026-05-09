@@ -17,7 +17,7 @@
 */
 
 std::vector<float> BlockGemmOMP(const std::vector<float>& a, const std::vector<float>& b, int n) {
-    std::vector<float> c(n * n);
+    std::vector<float> c(n * n, 0.0f);
 
     int block_size = 64;
 

@@ -19,7 +19,7 @@ Did it by my hands because it help when I was testing in on my laptop
 #include <omp.h>
 
 std::vector<float> NaiveGemmOMP(const std::vector<float>& a, const std::vector<float>& b, int n) {
-    std::vector<float> c(n * n);
+    std::vector<float> c(n * n, 0.0f);
 
 #pragma omp parallel for schedule(static)
     for (int i = 0; i < n; i++) {
