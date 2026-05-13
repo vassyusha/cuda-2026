@@ -1,0 +1,21 @@
+/home/crazyproger/sandbox/cuda-2026/3823B1FI3/4_naive_gemm_cuda/papulina_yuliya/naive_gemm_cuda.cu(12): error: no suitable conversion function from "const float4" to "float" exists
+              float b_elem = reinterpret_cast<const float4*>(b + k * n + i)[0];
+                             ^
+
+/home/crazyproger/sandbox/cuda-2026/3823B1FI3/4_naive_gemm_cuda/papulina_yuliya/naive_gemm_cuda.cu(13): error: expression must have class type but it has type "float"
+              tmp.x += a_elem * b_elem.x;
+                                ^
+
+/home/crazyproger/sandbox/cuda-2026/3823B1FI3/4_naive_gemm_cuda/papulina_yuliya/naive_gemm_cuda.cu(14): error: expression must have class type but it has type "float"
+              tmp.y += a_elem * b_elem.y;
+                                ^
+
+/home/crazyproger/sandbox/cuda-2026/3823B1FI3/4_naive_gemm_cuda/papulina_yuliya/naive_gemm_cuda.cu(15): error: expression must have class type but it has type "float"
+              tmp.z += a_elem * b_elem.z;
+                                ^
+
+/home/crazyproger/sandbox/cuda-2026/3823B1FI3/4_naive_gemm_cuda/papulina_yuliya/naive_gemm_cuda.cu(16): error: expression must have class type but it has type "float"
+              tmp.w += a_elem * b_elem.w;
+                                ^
+
+5 errors detected in the compilation of "/home/crazyproger/sandbox/cuda-2026/3823B1FI3/4_naive_gemm_cuda/papulina_yuliya/naive_gemm_cuda.cu".

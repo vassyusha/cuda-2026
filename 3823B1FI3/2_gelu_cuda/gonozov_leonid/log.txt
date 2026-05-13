@@ -1,0 +1,9 @@
+/home/crazyproger/sandbox/cuda-2026/3823B1FI3/2_gelu_cuda/gonozov_leonid/gelu_cuda.cu(10): error: identifier "i" is undefined
+          float x = input[i];
+                          ^
+
+/home/crazyproger/sandbox/cuda-2026/3823B1FI3/2_gelu_cuda/gonozov_leonid/gelu_cuda.cu(33): error: "output" has already been declared in the current scope
+      std::vector<float> output(size);
+                         ^
+
+2 errors detected in the compilation of "/home/crazyproger/sandbox/cuda-2026/3823B1FI3/2_gelu_cuda/gonozov_leonid/gelu_cuda.cu".
