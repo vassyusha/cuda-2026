@@ -48,7 +48,7 @@ std::vector<float> GemmCUBLAS(const std::vector<float>& a,
     const float alpha = 1.0f;
     const float beta = 0.0f;
 
-    cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, n, n, n, &alpha, d_a, n, d_b, n, &beta, d_c, n); // выполнение умножения матриц на GPU
+    cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, n, n, n, &alpha, d_b, n, d_a, n, &beta, d_c, n); // выполнение умножения матриц на GPU
 
     std::vector<float> c(size); // пока GPU выполняет вычисления, выделяем память для результата на CPU
 
