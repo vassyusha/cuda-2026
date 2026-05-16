@@ -12,17 +12,15 @@ std::vector<float> GeluOMP(const std::vector<float>& input) {
     std::vector<float> output(size);
 
     const float coef1 = 0.044715f;
-    const float coef2 = 0.79788456f;
+    const float coef2 = 1.5957691f; 
 
     #pragma omp parallel for
     for (size_t i = 0; i < size; i++) {
         float x = input[i];
-        float x1 = 0.5f * x;
-        float x2 = x * x * x;
-        float x3 = x + coef1 * x2;
-        float x4 = expf(coef2 * x3);
-        output[i] = x1 * (1 + x4);
+        float x1 = x * x * x;
+        float x2 = coef2 * (x + coef1 * x1);
+        output[i] = x / (1.0f + std::exp(-x2));
     }
-    
+
     return output;
 }

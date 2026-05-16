@@ -7,12 +7,12 @@ __global__ void gelu_kernel_fast(float* __restrict__ input, int n) {
     const float coef2 = 0.79788456f;
 
     if (idx < n) {
-        float x = input[i];
+        float x = input[idx];
         float x1 = 0.5f * x;
         float x2 = x * x * x;
         float x3 = x + coef1 * x2;
         float x4 = expf(coef2 * x3);
-        input[i] = x1 * (1 + x4);
+        input[idx] = x1 * (1 + x4);
     }
 }
 
@@ -29,8 +29,7 @@ std::vector<float> GeluCUDA(const std::vector<float>& input) {
     int blocks = (size + threads - 1) / threads;
     gelu_kernel_fast<<<blocks, threads>>>(input_cuda, size);
     cudaDeviceSynchronize();
-    
-    std::vector<float> output(size);
+
     cudaMemcpy(output.data(), input_cuda, size * sizeof(float), cudaMemcpyDeviceToHost);
     
     cudaFree(input_cuda);
