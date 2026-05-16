@@ -23,7 +23,6 @@ std::vector<float> NaiveGemmOMP(const std::vector<float>& a,
             const float* b_row = pB + k * n;
             
             #pragma omp simd
-            #pragma GCC unroll 8
             for (int j = 0; j < n; ++j) {
                 c_row[j] += val_a * b_row[j];
             }
