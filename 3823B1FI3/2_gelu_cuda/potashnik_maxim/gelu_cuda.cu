@@ -1,11 +1,6 @@
-#pragma GCC optimize("O3")
-#pragma GCC optimize("unroll-loops")
-#pragma GCC optimize("fast-math")
-#pragma GCC target("avx,avx2,fma")
-
 #include "gelu_cuda.h"
 
-/* Optimizations for GELU CUDA
+/* Optimizations 
 1. Overlap data transfer and computation
 2. Reuse static device memory to avoid repeated cudaMalloc/cudaFree
 3. Use pinned host memory for faster async copies
@@ -15,7 +10,7 @@
 7. Separate kernels for two halves to enable pipeline
 */
 
-float two_sqrt_2_div_pi = 1.5957691216057307116f
+const float two_sqrt_2_div_pi = 1.5957691216057307116f;
 
 __global__ void gelu_kernel_impl(const float* __restrict__ in, float* __restrict__ out, int N) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -68,7 +63,7 @@ std::vector<float> GeluCUDA(const std::vector<float>& input) {
     cudaStream_t stream2;
     cudaStreamCreate(&stream2);
 
-    cudaMemcpy(d_a1, input.data(),           half1 * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_a1, input.data(), half1 * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpyAsync(d_a2, input.data() + half1, half2 * sizeof(float), cudaMemcpyHostToDevice, stream2);
 
     gelu_kernel_impl<<<grid1, BLOCK_SZ>>>(d_a1, d_c1, half1);
