@@ -1,8 +1,8 @@
-#ifndef __GELU_CUDA_H
-#define __GELU_CUDA_H
+#ifndef __BLOCK_GEMM_CUDA_H
+#define __BLOCK_GEMM_CUDA_H
 
 #include <vector>
 
-std::vector<float> GeluCUDA(const std::vector<float>& input);
+std::vector<float> BlockGemmCUDA(const std::vector<float>& a, const std::vector<float>& b, int n);
 
-#endif // __GELU_CUDA_H
+#endif // __BLOCK_GEMM_CUDA_H
