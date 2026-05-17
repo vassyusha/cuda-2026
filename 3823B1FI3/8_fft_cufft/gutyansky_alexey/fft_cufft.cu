@@ -47,7 +47,7 @@ std::vector<float> FffCUFFT(const std::vector<float>& input, int batch) {
     cufftExecC2C(plan_inverse, d_data, d_data, CUFFT_INVERSE);
 
     const int BlockSize = 256;
-    int num_blocks = (N + BlockSize - 1) / BlockSize;
+    int num_blocks = (N * batch + BlockSize - 1) / BlockSize;
     Normalize_cu<<<num_blocks,BlockSize, 0, stream>>>(d_data, N, batch);
 
     std::vector<float> output(input.size());
