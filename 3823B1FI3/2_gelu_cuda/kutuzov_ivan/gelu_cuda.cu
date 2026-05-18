@@ -1,48 +1,40 @@
 #include "gelu_cuda.h"
 #include <cuda_runtime.h>
-#include <vector>
 #include <cmath>
+#include <vector>
 
-static constexpr float sqrt_2_div_pi     = 0.7978845608028653558f;
-static constexpr float two_sqrt_2_div_pi = 1.5957691216057307116f;
-static constexpr float coeff_cubic       = 0.044715f;
-
-__global__ void gelu_kernel(const float* __restrict__ input,
-                            float* __restrict__ output,
-                            int n)
+__global__ void kernel(float* input, float* output, int n) 
 {
-    for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < n; i += blockDim.x * gridDim.x) {
-        float x   = __ldg(input + i);
-        float x3  = x * x * x;
-        float arg = -two_sqrt_2_div_pi * (x + coeff_cubic * x3);
-        output[i] = x / (1.0f + __expf(arg));
+    int thread_id = blockDim.x * blockIdx.x + threadIdx.x;
+    if (thread_id < n) 
+    {
+        float x = input[thread_id];
+        float argument = 1.595769f * (x + 0.044715f * x * x * x);
+        output[thread_id] = x - x / (expf(argument) + 1.0f);
     }
 }
 
-std::vector<float> GeluCUDA(const std::vector<float>& input)
+std::vector<float> GeluCUDA(const std::vector<float>& input) 
 {
-    int n = static_cast<int>(input.size());
-    if (n == 0) return {};
+    float* gpu_input;
+    float* gpu_output;
+    int n = input.size();
+    cudaMalloc(&gpu_input, n * sizeof(float));
+    cudaMalloc(&gpu_output, n * sizeof(float));
 
-    float *d_input = nullptr, *d_output = nullptr;
-    cudaMalloc(&d_input,  n * sizeof(float));
-    cudaMalloc(&d_output, n * sizeof(float));
+    cudaMemcpy(gpu_input, input.data(), n * sizeof(float), cudaMemcpyHostToDevice);
 
-    float *h_pinned = nullptr;
-    cudaMallocHost(&h_pinned, n * sizeof(float));
+    int block_size = 256;
+    int grid_size = (n + block_size - 1) / block_size;
+    
+    kernel<<<grid_size, block_size>>> (gpu_input, gpu_output, n);
 
-    const int block_size = 256;
-    const int grid_size  = std::min(128 * 56, (n + block_size - 1) / block_size);
+    std::vector<float> output(n);
 
-    cudaMemcpy(d_input, input.data(), n * sizeof(float), cudaMemcpyHostToDevice);
-    gelu_kernel<<<grid_size, block_size>>>(d_input, d_output, n);
-    cudaMemcpy(h_pinned, d_output, n * sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(output.data(), gpu_output, n  * sizeof(float), cudaMemcpyDeviceToHost);
 
-    std::vector<float> result(h_pinned, h_pinned + n);
+    cudaFree(gpu_input);
+    cudaFree(gpu_output);
 
-    cudaFreeHost(h_pinned);
-    cudaFree(d_input);
-    cudaFree(d_output);
-
-    return result;
+    return output;
 }

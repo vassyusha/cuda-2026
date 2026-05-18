@@ -1,65 +1,41 @@
 #include "gemm_cublas.h"
-#include <cublas_v2.h>
 #include <cuda_runtime.h>
-#include <vector>
+#include <cublas_v2.h>
 
 std::vector<float> GemmCUBLAS(const std::vector<float>& a,
                               const std::vector<float>& b,
-                              int n)
-{
-    const int total = n * n;
-    if (total == 0) return {};
+                              int n) {
+    float* gpu_A;
+    float* gpu_B;
+    float* gpu_C;
+    int bytes = n * n * sizeof(float);
+    float alpha = 1.0f;
+    float beta = 0.0f;
 
-    cudaStream_t stream;
-    cudaStreamCreate(&stream);
+    cudaMalloc(&gpu_A, bytes);
+    cudaMalloc(&gpu_B, bytes);
+    cudaMalloc(&gpu_C, bytes);
 
-    float *h_pinned_inA = nullptr, *h_pinned_inB = nullptr, *h_pinned_out = nullptr;
-    cudaMallocHost(&h_pinned_inA, total * sizeof(float));
-    cudaMallocHost(&h_pinned_inB, total * sizeof(float));
-    cudaMallocHost(&h_pinned_out, total * sizeof(float));
-
-    std::copy(a.begin(), a.end(), h_pinned_inA);
-    std::copy(b.begin(), b.end(), h_pinned_inB);
-
-    float *d_A = nullptr, *d_B = nullptr, *d_C = nullptr;
-    cudaMalloc(&d_A, total * sizeof(float));
-    cudaMalloc(&d_B, total * sizeof(float));
-    cudaMalloc(&d_C, total * sizeof(float));
-
-    cudaMemcpyAsync(d_A, h_pinned_inA, total * sizeof(float), cudaMemcpyHostToDevice, stream);
-    cudaMemcpyAsync(d_B, h_pinned_inB, total * sizeof(float), cudaMemcpyHostToDevice, stream);
+    cublasSetMatrix(n, n, sizeof(float), a.data(), n, gpu_A, n);
+    cublasSetMatrix(n, n, sizeof(float), b.data(), n, gpu_B, n);
 
     cublasHandle_t handle;
     cublasCreate(&handle);
-    cublasSetStream(handle, stream);
 
-    const float alpha = 1.0f;
-    const float beta  = 0.0f;
 
-    cublasSgemm(handle,
-                CUBLAS_OP_N, CUBLAS_OP_N,
-                n, n, n,
-                &alpha,
-                d_B, n,
-                d_A, n,
-                &beta,
-                d_C, n);
+    cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, 
+                n, n, n, 
+                &alpha, gpu_B, n,
+                gpu_A, n, &beta, gpu_C, n);
 
-    cudaMemcpyAsync(h_pinned_out, d_C, total * sizeof(float), cudaMemcpyDeviceToHost, stream);
+        
+    std::vector<float> C(n * n);
 
-    cudaStreamSynchronize(stream);
-
-    std::vector<float> result(h_pinned_out, h_pinned_out + total);
+    cublasGetMatrix(n, n, sizeof(float), gpu_C, n, C.data(), n);
 
     cublasDestroy(handle);
-    cudaStreamDestroy(stream);
-
-    cudaFreeHost(h_pinned_inA);
-    cudaFreeHost(h_pinned_inB);
-    cudaFreeHost(h_pinned_out);
-    cudaFree(d_A);
-    cudaFree(d_B);
-    cudaFree(d_C);
-
-    return result;
+    cudaFree(gpu_A);
+    cudaFree(gpu_B);
+    cudaFree(gpu_C);
+    return C;
 }

@@ -1,61 +1,55 @@
 #include "fft_cufft.h"
 #include <cufft.h>
-#include <cuda_runtime.h>
-#include <vector>
 
-__global__ void normalize_kernel(float* data, int total, float mult) 
-{
+__global__ void normalize_kernel(float* data, int n, float scale) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i < total)
-        data[i] *= mult;
+    if (i < n) data[i] *= scale;
 }
 
-std::vector<float> FffCUFFT(const std::vector<float>& input, int batch) 
-{
+std::vector<float> FffCUFFT(const std::vector<float>& input, int batch) {
+    int n = static_cast<int>(input.size()) / (2 * batch);
+    size_t bytes = input.size() * sizeof(float);
     int total = static_cast<int>(input.size());
-    if (total == 0) return {};
 
-    int n = total / (2 * batch);
-    size_t bytes = total * sizeof(float);
+    static cufftComplex* d_data     = nullptr;
+    static size_t device_capacity   = 0;
 
-    cudaStream_t stream;
-    cudaStreamCreate(&stream);
+    if (bytes > device_capacity) {
+        if (device_capacity > 0) cudaFree(d_data);
+        cudaMalloc(&d_data, bytes);
+        device_capacity = bytes;
+    }
 
-    float* h_pinned_in = nullptr;
-    float* h_pinned_out = nullptr;
-    cudaMallocHost(&h_pinned_in, bytes);
-    cudaMallocHost(&h_pinned_out, bytes);
+    static float* h_out = nullptr;
+    static size_t pinned_capacity = 0;
 
-    std::copy(input.begin(), input.end(), h_pinned_in);
+    if (bytes > pinned_capacity) {
+        if (h_out) cudaFreeHost(h_out);
+        cudaMallocHost(&h_out, bytes);
+        pinned_capacity = bytes;
+    }
 
-    cufftComplex* d_data = nullptr;
-    cudaMalloc(&d_data, bytes);
+    static cufftHandle plan    = 0;
+    static int cached_n        = 0;
+    static int cached_batch    = 0;
 
-    cudaMemcpyAsync(d_data, h_pinned_in, bytes, cudaMemcpyHostToDevice, stream);
+    if (cached_n != n || cached_batch != batch) {
+        if (plan) cufftDestroy(plan);
+        cufftPlan1d(&plan, n, CUFFT_C2C, batch);
+        cached_n     = n;
+        cached_batch = batch;
+    }
 
-    cufftHandle plan;
-    cufftPlan1d(&plan, n, CUFFT_C2C, batch);
-    cufftSetStream(plan, stream);
+    cudaMemcpy(d_data, input.data(), bytes, cudaMemcpyHostToDevice);
 
     cufftExecC2C(plan, d_data, d_data, CUFFT_FORWARD);
     cufftExecC2C(plan, d_data, d_data, CUFFT_INVERSE);
 
     const int block_size = 256;
-    int num_blocks = (total + block_size - 1) / block_size;
-    normalize_kernel<<<num_blocks, block_size, 0, stream>>>(
-        reinterpret_cast<float*>(d_data), total, 1.0f / n);
+    const int grid_size  = (total + block_size - 1) / block_size;
+    normalize_kernel<<<grid_size, block_size>>>(reinterpret_cast<float*>(d_data), total, 1.0f / n);
 
-    cudaMemcpyAsync(h_pinned_out, d_data, bytes, cudaMemcpyDeviceToHost, stream);
+    cudaMemcpy(h_out, d_data, bytes, cudaMemcpyDeviceToHost);
 
-    cudaStreamSynchronize(stream);
-
-    std::vector<float> result(h_pinned_out, h_pinned_out + total);
-
-    cufftDestroy(plan);
-    cudaStreamDestroy(stream);
-    cudaFreeHost(h_pinned_in);
-    cudaFreeHost(h_pinned_out);
-    cudaFree(d_data);
-
-    return result;
+    return std::vector<float>(h_out, h_out + total);
 }
