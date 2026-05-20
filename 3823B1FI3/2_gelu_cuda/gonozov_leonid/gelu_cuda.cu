@@ -4,15 +4,13 @@ __global__ void gelu_kernel_fast(float* __restrict__ input, int n) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     
     const float coef1 = 0.044715f;
-    const float coef2 = 0.79788456f;
+    const float coef2 = 1.5957691f; 
 
     if (idx < n) {
         float x = input[idx];
-        float x1 = 0.5f * x;
-        float x2 = x * x * x;
-        float x3 = x + coef1 * x2;
-        float x4 = expf(coef2 * x3);
-        input[idx] = x1 * (1 + x4);
+        float x1 = x * x * x;
+        float x2 = coef2 * (x + coef1 * x1);
+        input[idx] = x / (1.0f + std::exp(-x2));
     }
 }
 
