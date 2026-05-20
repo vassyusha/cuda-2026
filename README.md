@@ -648,6 +648,7 @@ std::vector<float> GeluOCL(const std::vector<float>& input, int platform) {
 |3823B1FI3|kichanova_ksenia|0.1514|3|
 |3823B1FI3|kutergin_valentin|0.1520|10|
 |3823B1FI3|pylaeva_svetlana|0.1533|6|
+|3823B1FI3|papulina_yuliya|0.1555|16|
 |3823B1FI3|potashnik_maxim|0.1601|11|
 |3823B1FI3|romanov_artem|0.1994|9|
 |3823B1FI3|zavyalov_alexey|0.2043|5|
@@ -664,30 +665,30 @@ std::vector<float> GeluOCL(const std::vector<float>& input, int platform) {
 ## 3823B1FI3
 |Group|Name|Passed|Score|
 |-----|----|------|-----|
-|3823B1FI3|baldin_andrew|**9/9**|**462**|
+|3823B1FI3|baldin_andrew|**9/9**|**461**|
 |3823B1FI3|chacshin_vladimir|3/9|130|
 |3823B1FI3|dolov_vyacheslav|**9/9**|**429**|
 |3823B1FI3|frolova_sofya|8/9|340|
 |3823B1FI3|gonozov_leonid|5/9|191|
 |3823B1FI3|gutyansky_alexey|**9/9**|**438**|
 |3823B1FI3|kichanova_ksenia|**9/9**|**495**|
-|3823B1FI3|kurpiakov_aleksei|**9/9**|**448**|
+|3823B1FI3|kurpiakov_aleksei|**9/9**|**447**|
 |3823B1FI3|kurpiakov_alexei|2/9|100|
 |3823B1FI3|kutergin_valentin|**9/9**|**471**|
-|3823B1FI3|kutuzov_ivan|**9/9**|**389**|
-|3823B1FI3|levonychev_ivan|**9/9**|**447**|
-|3823B1FI3|lukin_ivan|**9/9**|**428**|
-|3823B1FI3|luzan_egor|**9/9**|**307**|
-|3823B1FI3|papulina_yuliya|8/9|320|
-|3823B1FI3|potashnik_maxim|**9/9**|**398**|
+|3823B1FI3|kutuzov_ivan|**9/9**|**388**|
+|3823B1FI3|levonychev_ivan|**9/9**|**446**|
+|3823B1FI3|lukin_ivan|**9/9**|**427**|
+|3823B1FI3|luzan_egor|**9/9**|**306**|
+|3823B1FI3|papulina_yuliya|**9/9**|**364**|
+|3823B1FI3|potashnik_maxim|**9/9**|**397**|
 |3823B1FI3|pylaeva_svetlana|**9/9**|**436**|
-|3823B1FI3|romanov_artem|**9/9**|**446**|
-|3823B1FI3|votincev_dmitri|**9/9**|**442**|
-|3823B1FI3|zavyalov_alexey|**9/9**|**434**|
+|3823B1FI3|romanov_artem|**9/9**|**445**|
+|3823B1FI3|votincev_dmitri|**9/9**|**441**|
+|3823B1FI3|zavyalov_alexey|**9/9**|**433**|
 
-Passed: 15
+Passed: 16
 
-**Total Passed: 15**
+**Total Passed: 16**
 
 ---
 *Maximum Score: 576 (64 per task)*
