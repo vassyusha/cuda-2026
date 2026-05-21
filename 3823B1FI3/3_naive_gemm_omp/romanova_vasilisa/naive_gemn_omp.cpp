@@ -14,7 +14,7 @@ std::vector<float> NaiveGemmOMP(const std::vector<float>& a,
     float* __restrict__ C = c.data();
 
 
-    #pragma omp parallel for shedule(static)
+    #pragma omp parallel for schedule(static)
     for(int i = 0; i < n; i++){
         float* cRow = C + i*n;
         float* aRow = A + i*n;
