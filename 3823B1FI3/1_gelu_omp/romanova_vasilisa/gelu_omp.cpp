@@ -14,7 +14,7 @@ std::vector<float> GeluOMP(const std::vector<float>& input) {
     float pi = std::acos(-1.0);
     float a = -1.59576912f;
     float b = -0.07135482f;
-    #pragma omp parallel for shedule(static)
+    #pragma omp parallel for schedule(static)
     for(size_t i = 0; i < size; i++){
         float x = input[i];
         float z = x*(a+b*x*x);
