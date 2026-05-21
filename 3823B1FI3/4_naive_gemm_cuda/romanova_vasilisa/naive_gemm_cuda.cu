@@ -1,7 +1,7 @@
 #include "naive_gemm_cuda.h"
 #include <cuda_runtime.h>
 
-__global__ void NaiveMatrixMultiply(const __restrict__ float* a, const __restrict__ float* b, __restrict__ float* c, int n) {
+__global__ void NaiveMatrixMultiply(const float* __restrict__ a, const float* __restrict__ b, float* __restrict__ c, int n) {
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
