@@ -18,7 +18,7 @@ __kernel void gelu(__global const float* input,
   float x = input[idx];
   const float alpha = -1.59576912f;
   const float beta = -0.07135482f;
-  float inner = x * (a + beta * x * x);
+  float inner = x * (alpha + beta * x * x);
   output[idx] = x / (1.0f + exp(inner));
 }
 )";
