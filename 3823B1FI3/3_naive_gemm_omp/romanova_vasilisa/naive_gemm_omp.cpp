@@ -17,10 +17,10 @@ std::vector<float> NaiveGemmOMP(const std::vector<float>& a,
     #pragma omp parallel for schedule(static)
     for(int i = 0; i < n; i++){
         float* cRow = C + i*n;
-        float* aRow = A + i*n;
+        const float* aRow = A + i*n;
         for(int k = 0; k < n; k++){
             float aVal = *(aRow + k);
-            float* bRow = B + k*n;
+            const float* bRow = B + k*n;
             #pragma omp simd
             for(int j = 0; j < n; j++){
                 float bVal = *(bRow + j);
